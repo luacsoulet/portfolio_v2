@@ -1,0 +1,8 @@
+backend/node_modules
+backend/dist
+backend/build
+backend/cache
+backend/logs
+backend/temp
+
+frontend/node_modules
