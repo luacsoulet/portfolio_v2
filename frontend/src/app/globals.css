@@ -25,3 +25,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer components {
+  .glass-effect {
+    @apply bg-gray-500/10 rounded-2xl border-1 border-gray-500/40 backdrop-blur-2xl;
+  }
+}
