@@ -1,28 +1,47 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import http from 'http';
+import app from './app';
 
-dotenv.config();
+const normalizePort = (val: string) => {
+    const port = parseInt(val, 10);
 
-const app = express();
-const port = process.env.PORT || 3001;
+    if (isNaN(port)) {
+        return val;
+    }
+    if (port >= 0) {
+        return port;
+    }
+    return false;
+}
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+const port = normalizePort(process.env.PORT || '4000');
+app.set('port', port);
 
-// Connexion à MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio')
-    .then(() => console.log('Connecté à MongoDB'))
-    .catch((err) => console.error('Erreur de connexion à MongoDB:', err));
+const errorHandler = (error: any) => {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+    const address = server.address();
+    const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges.');
+            process.exit(1);
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use.');
+            process.exit(1);
+        default:
+            throw error;
+    }
+}
 
-// Routes de base
-app.get('/', (req, res) => {
-    res.json({ message: 'API du portfolio' });
-});
+const server = http.createServer(app);
+server.on('error', errorHandler);
+server.on('listening', onListening);
 
-// Démarrage du serveur
-app.listen(port, () => {
-    console.log(`Serveur démarré sur le port ${port}`);
-});
+function onListening() {
+    const address = server.address();
+    const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+    console.log('Listening on ' + bind + ' ✅');
+}
+
+server.listen(port);
