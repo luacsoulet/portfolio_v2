@@ -74,8 +74,22 @@ export const AboutSection = () => {
         }
     };
 
+    const gradientLineVariants = {
+        hidden: {
+            scaleY: 0,
+            transformOrigin: "top"
+        },
+        visible: {
+            scaleY: 1,
+            transition: {
+                duration: 2,
+                ease: "easeInOut"
+            }
+        }
+    };
+
     return (
-        <section id="About-section" className="flex flex-col gap-12 my-24">
+        <section id="About-section" className="flex flex-col gap-12 my-24 max-w-[1440px]">
             <motion.h2
                 initial={{ opacity: 0, y: -20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -194,8 +208,8 @@ export const AboutSection = () => {
                                 Also worked on backend API development in PHP and built automation scripts and bots in Python for data collection and marketing communication tasks.</p>
                         </motion.div>
                         <motion.hr
-                            variants={lastLineVariants}
-                            className="origin-top"
+                            variants={gradientLineVariants}
+                            className="origin-top bg-[linear-gradient(to_bottom,#899878_50%,#15191E_50%)]"
                         />
                     </motion.li>
                     <motion.li
