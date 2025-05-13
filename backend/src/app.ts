@@ -1,16 +1,17 @@
 import express from 'express';
-import path from 'path';
-import cors from 'cors';
+import morgan from 'morgan';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import projectsRoutes from './routes/projects';
+import usersRoutes from './routes/users';
 
-dotenv.config({ path: '.env' });
+dotenv.config({ path: './.env' });
 
-const DB = process.env.MONGODB_URI?.replace('<password>', process.env.MONGODB_PASSWORD!);
+const DB = process.env.MONGODB_URI?.replace('<db_password>', process.env.MONGODB_PASSWORD!);
 
 mongoose
     .connect(DB!)
-    .then(() => { console.log('Connected to MongoDB'); })
+    .then(() => { console.log('Connected to MongoDB ✅'); })
     .catch((err) => { console.log(err); });
 
 const app = express();
@@ -23,9 +24,11 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(morgan('dev'));
+
+app.use('/api/projects', projectsRoutes);
+app.use('/api/users', usersRoutes);
 
 export default app;
