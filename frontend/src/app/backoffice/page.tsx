@@ -1,12 +1,7 @@
 "use client"
 import { useState } from "react"
-import { login } from "@/utils/apifunctions"
-// import { Toast } from "@/components/Toast"
-
-interface LoginError extends Error {
-    status?: number;
-    statusText?: string;
-}
+import { login } from "@/utils/apiFunctions"
+import { ApiError } from "@/types/errorTypes"
 
 interface ButtonProps {
     onClick?: () => void;
@@ -37,7 +32,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<LoginError | null>(null);
+    const [error, setError] = useState<ApiError | null>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,11 +42,11 @@ export default function LoginPage() {
             localStorage.setItem('token', response.token);
             setTimeout(() => {
                 setIsLoading(false);
-                window.location.href = '/';
+                window.location.href = '/backoffice/projects';
             }, 3000);
         } catch (error) {
             console.error('Login error:', error);
-            const loginError = error as LoginError;
+            const loginError = error as ApiError;
             setError(loginError);
         }
     }
