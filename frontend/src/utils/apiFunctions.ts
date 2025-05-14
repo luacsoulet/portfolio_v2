@@ -2,6 +2,7 @@ import { ApiError } from '@/types/errorTypes';
 
 const handleApiError = (response: Response): never => {
     const error = new Error() as ApiError;
+    error.name = 'ApiError';
     error.status = response.status;
 
     switch (response.status) {
@@ -14,7 +15,6 @@ const handleApiError = (response: Response): never => {
         default:
             error.statusText = 'An error occurred';
     }
-
     throw error;
 };
 
@@ -36,6 +36,7 @@ export const login = async (email: string, password: string) => {
     } catch (error) {
         if (error instanceof TypeError && error.message === 'Failed to fetch') {
             const apiError = new Error() as ApiError;
+            apiError.name = 'NetworkError';
             apiError.status = 0;
             apiError.statusText = 'Impossible de se connecter au serveur';
             throw apiError;
