@@ -9,3 +9,10 @@ declare module 'express-serve-static-core' {
         auth?: CustomJwtPayload;
     }
 }
+
+declare module 'express-serve-static-core' {
+    interface Request {
+        files?: Express.Multer.File[];
+        file?: Express.Multer.File;
+    }
+}
