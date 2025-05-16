@@ -1,5 +1,6 @@
 import Project from '../models/projects';
 import { Request, Response } from 'express';
+import { uploadToCloudinary } from '../middleware/images';
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
@@ -30,16 +31,37 @@ export const createProject = async (req: Request, res: Response) => {
         return res.status(401).send({ message: 'Unauthorized' });
     }
 
-    const project = new Project({
-        ...req.body,
-        author: auth.userId
-    });
-
     try {
+        const files = (req as any).files;
+        if (files) {
+            const imageCoverFile = files.find((file: any) => file.fieldname === 'imageCover');
+            if (imageCoverFile) {
+                const imageCoverUrl = await uploadToCloudinary(imageCoverFile.buffer);
+                req.body.imageCover = imageCoverUrl;
+            }
+
+            const imageFiles = files.filter((file: any) => file.fieldname === 'images');
+            if (imageFiles.length > 0) {
+                const imageUrls = await Promise.all(
+                    imageFiles.map(async (file: any) => {
+                        const imageUrl = await uploadToCloudinary(file.buffer);
+                        return imageUrl;
+                    })
+                );
+                req.body.images = imageUrls;
+            }
+        }
+
+        const project = new Project({
+            ...req.body,
+            author: auth.userId
+        });
+
         await project.save();
         res.status(201).send(project);
     } catch (error) {
-        res.status(500).send({ message: 'Error creating project with this data: ' + req.body });
+        console.error('Error creating project:', error);
+        res.status(500).send({ message: 'Error creating project' });
     }
 }
 
@@ -61,10 +83,31 @@ export const updateProject = async (req: Request, res: Response) => {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
+        const files = (req as any).files;
+        if (files) {
+            const imageCoverFile = files.find((file: any) => file.fieldname === 'imageCover');
+            if (imageCoverFile) {
+                const imageCoverUrl = await uploadToCloudinary(imageCoverFile.buffer);
+                req.body.imageCover = imageCoverUrl;
+            }
+
+            const imageFiles = files.filter((file: any) => file.fieldname === 'images');
+            if (imageFiles.length > 0) {
+                const imageUrls = await Promise.all(
+                    imageFiles.map(async (file: any) => {
+                        const imageUrl = await uploadToCloudinary(file.buffer);
+                        return imageUrl;
+                    })
+                );
+                req.body.images = imageUrls;
+            }
+        }
+
         const updatedProject = await Project.findByIdAndUpdate(id, req.body, { new: true });
         res.status(200).send(updatedProject);
     } catch (error) {
-        res.status(500).send({ message: 'Error updating project with id: ' + req?.params?.id });
+        console.error('Error updating project:', error);
+        res.status(500).send({ message: 'Error updating project' });
     }
 }
 
