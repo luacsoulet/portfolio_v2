@@ -1,11 +1,13 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
 import express from 'express';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import projectsRoutes from './routes/projects';
 import usersRoutes from './routes/users';
-
-dotenv.config({ path: './.env' });
 
 const DB = process.env.MONGODB_URI?.replace('<db_password>', process.env.MONGODB_PASSWORD!);
 
