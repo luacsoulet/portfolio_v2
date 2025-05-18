@@ -44,3 +44,19 @@ export const login = async (email: string, password: string) => {
         throw error;
     }
 };
+
+export const getAllProjects = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`);
+    if (!response.ok) {
+        return handleApiError(response);
+    }
+    return response.json();
+};
+
+export const getProjectById = async (id: string) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`);
+    if (!response.ok) {
+        return handleApiError(response);
+    }
+    return response.json();
+};
